@@ -7,5 +7,5 @@ import (
 type Transport struct{}
 
 func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
-	return nil, nil
+	return http.DefaultTransport.RoundTrip(r)
 }
