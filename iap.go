@@ -22,7 +22,11 @@ type Transport struct {
 	oauthTransport *oauth2.Transport
 }
 
-func newTransport(clientID string) (*Transport, error) {
+// NewTransport returns an initialized Transport.  It requires OAuth Client ID
+// of the IAP resource target of the Transport.  It finds the service account
+// key using Application Default Credentials (ADC) strategy described in
+// https://cloud.google.com/docs/authentication/production.
+func NewTransport(iapClientID string) (*Transport, error) {
 	transport := &Transport{}
 
 	creds, err := credentialsFinder(context.Background())
@@ -36,7 +40,7 @@ func newTransport(clientID string) (*Transport, error) {
 	}
 
 	conf.PrivateClaims = map[string]interface{}{
-		"target_audience": clientID,
+		"target_audience": iapClientID,
 	}
 
 	conf.UseIDToken = true

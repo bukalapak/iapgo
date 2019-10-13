@@ -29,7 +29,7 @@ func TestNewTransport(t *testing.T) {
 		credentialsFinder = origCredentialsFinder
 	}()
 
-	transport, err := newTransport("ABCD")
+	transport, err := NewTransport("ABCD")
 	if err != nil {
 		t.Fatal("unexpected error:", err)
 	}
@@ -46,7 +46,7 @@ func TestNewTransport_CredentialsError(t *testing.T) {
 		credentialsFinder = origCredentialsFinder
 	}()
 
-	transport, err := newTransport("ABCD")
+	transport, err := NewTransport("ABCD")
 	if err == nil {
 		t.Fatal("no error returned")
 	}
@@ -63,7 +63,7 @@ func TestNewTransport_JWTError(t *testing.T) {
 		credentialsFinder = origCredentialsFinder
 	}()
 
-	transport, err := newTransport("ABCD")
+	transport, err := NewTransport("ABCD")
 	if err == nil {
 		t.Fatal("no error returned")
 	}
@@ -95,7 +95,7 @@ func TestTransport_RoundTrip(t *testing.T) {
 		assertAuthorizationHeader(t, r.Header.Get("Authorization"))
 	}))
 
-	transport, err := newTransport(clientID)
+	transport, err := NewTransport(clientID)
 	if err != nil {
 		t.Fatal("newTransport returns error:", err)
 	}
