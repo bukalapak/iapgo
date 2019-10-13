@@ -125,6 +125,8 @@ func TestTransport_RoundTrip_Unitialized(t *testing.T) {
 	}
 }
 
+type credentialsFinderFn func(ctx context.Context, scopes ...string) (*google.Credentials, error)
+
 func mockServiceAccountKey(t *testing.T, authURL string) credentialsFinderFn {
 	t.Helper()
 

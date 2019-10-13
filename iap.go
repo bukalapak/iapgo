@@ -12,9 +12,7 @@ import (
 	"golang.org/x/oauth2/google"
 )
 
-type credentialsFinderFn func(ctx context.Context, scopes ...string) (*google.Credentials, error)
-
-var credentialsFinder credentialsFinderFn = google.FindDefaultCredentials
+var credentialsFinder = google.FindDefaultCredentials
 
 var errUninitialized = errors.New("iapgo: unitialized Transport")
 
