@@ -22,6 +22,61 @@ import (
 // Ensures Transport implements http.RoundTripper.
 var _ http.RoundTripper = new(Transport)
 
+func TestNewTransport(t *testing.T) {
+	origCredentialsFinder := credentialsFinder
+	credentialsFinder = mockServiceAccountKey(t, "http://localhost")
+	defer func() {
+		credentialsFinder = origCredentialsFinder
+	}()
+
+	transport, err := newTransport("ABCD")
+	if err != nil {
+		t.Fatal("unexpected error:", err)
+	}
+
+	if transport == nil {
+		t.Fatal("transport is nil")
+	}
+}
+
+func TestNewTransport_CredentialsError(t *testing.T) {
+	origCredentialsFinder := credentialsFinder
+	credentialsFinder = brokenCredentialsFn
+	defer func() {
+		credentialsFinder = origCredentialsFinder
+	}()
+
+	transport, err := newTransport("ABCD")
+	if err == nil {
+		t.Fatal("no error returned")
+	}
+
+	if transport != nil {
+		t.Fatal("transport is not nil")
+	}
+}
+
+func TestNewTransport_JWTError(t *testing.T) {
+	origCredentialsFinder := credentialsFinder
+	credentialsFinder = mockUserCredentials(t, "http://localhost")
+	defer func() {
+		credentialsFinder = origCredentialsFinder
+	}()
+
+	transport, err := newTransport("ABCD")
+	if err == nil {
+		t.Fatal("no error returned")
+	}
+
+	if !strings.HasSuffix(err.Error(), `'type' field is "authorized_user" (expected "service_account")`) {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if transport != nil {
+		t.Fatal("transport is not nil")
+	}
+}
+
 func TestTransport_RoundTrip(t *testing.T) {
 	clientID := "ABCD"
 
@@ -40,55 +95,33 @@ func TestTransport_RoundTrip(t *testing.T) {
 		assertAuthorizationHeader(t, r.Header.Get("Authorization"))
 	}))
 
-	client := &http.Client{
-		Transport: &Transport{
-			clientID: clientID,
-		},
+	transport, err := newTransport(clientID)
+	if err != nil {
+		t.Fatal("newTransport returns error:", err)
 	}
 
-	_, err := client.Get(svr.URL)
+	client := &http.Client{
+		Transport: transport,
+	}
+
+	_, err = client.Get(svr.URL)
 	if err != nil {
 		t.Fatal("client.Get:", err)
 	}
 }
 
-func TestTransport_RoundTrip_CredentialsError(t *testing.T) {
-	origCredentialsFinder := credentialsFinder
-	credentialsFinder = brokenCredentialsFn
-	defer func() {
-		credentialsFinder = origCredentialsFinder
-	}()
-
+func TestTransport_RoundTrip_Unitialized(t *testing.T) {
 	client := &http.Client{
 		Transport: new(Transport),
 	}
 
 	_, err := client.Get("http://localhost")
-	switch {
-	case err == nil:
-		t.Fatal("no error, want some")
-	case !strings.HasSuffix(err.Error(), "brokenCredentialsFn"):
-		t.Fatalf("unexpected error: %v", err)
-	}
-}
-
-func TestTransport_RoundTrip_JWTError(t *testing.T) {
-	origCredentialsFinder := credentialsFinder
-	credentialsFinder = mockUserCredentials(t, "http://localhost")
-	defer func() {
-		credentialsFinder = origCredentialsFinder
-	}()
-
-	client := &http.Client{
-		Transport: new(Transport),
+	if err == nil {
+		t.Fatal("no error returned")
 	}
 
-	_, err := client.Get("http://localhost")
-	switch {
-	case err == nil:
-		t.Fatal("no error, want some")
-	case !strings.HasSuffix(err.Error(), `'type' field is "authorized_user" (expected "service_account")`):
-		t.Fatalf("unexpected error: %v", err)
+	if !strings.HasSuffix(err.Error(), errUninitialized.Error()) {
+		t.Fatal("unexpected error:", err)
 	}
 }
 
