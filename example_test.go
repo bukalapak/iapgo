@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/saifulwebid/iapgo"
+	"github.com/bukalapak/iapgo"
 )
 
 func Example() {

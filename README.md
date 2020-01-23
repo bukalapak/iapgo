@@ -1,8 +1,8 @@
 # iapgo
 
-[![Build Status](https://travis-ci.com/saifulwebid/iapgo.svg?branch=master)](https://travis-ci.com/saifulwebid/iapgo)
-[![codecov](https://codecov.io/gh/saifulwebid/iapgo/branch/master/graph/badge.svg)](https://codecov.io/gh/saifulwebid/iapgo)
-[![GoDoc](https://godoc.org/github.com/saifulwebid/iapgo?status.svg)](https://godoc.org/github.com/saifulwebid/iapgo)
+[![Build Status](https://travis-ci.org/bukalapak/iapgo.svg?branch=master)](https://travis-ci.org/bukalapak/iapgo)
+[![codecov](https://codecov.io/gh/bukalapak/iapgo/branch/master/graph/badge.svg)](https://codecov.io/gh/bukalapak/iapgo)
+[![GoDoc](https://godoc.org/github.com/bukalapak/iapgo?status.svg)](https://godoc.org/github.com/bukalapak/iapgo)
 
 iapgo is a Go library to help authenticating access to endpoints behind Google [Cloud Identity-Aware Proxy](https://cloud.google.com/iap/).
 
@@ -15,7 +15,7 @@ import (
     "log"
     "net/http"
 
-    "github.com/saifulwebid/iapgo"
+    "github.com/bukalapak/iapgo"
 )
 
 func main() {

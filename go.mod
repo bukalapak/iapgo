@@ -1,4 +1,4 @@
-module github.com/saifulwebid/iapgo
+module github.com/bukalapak/iapgo
 
 go 1.12
 
